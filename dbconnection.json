@@ -1,8 +1,0 @@
-{
-    "dbname": "cgm",
-    "user": "DB_Admin@cgm-in-bmz-dev-sql",
-    "host": "cgm-in-bmz-dev-sql.postgres.database.azure.com",
-    "password": "C0mplex!3000",
-    "port": 5432,
-    "sslmode": "require"
-}
