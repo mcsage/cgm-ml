@@ -60,7 +60,7 @@ def main():
     
 def update_artifactsquality_with_bluriness():
     # Get all images.
-    sql_script = "SELECT id, path FROM artifact WHERE type='rgb'"
+    sql_script = "SELECT id, storage_path FROM artifact WHERE dataformat='rgb'"
     db_connector = dbutils.connect_to_main_database()
     image_entries = db_connector.execute(sql_script, fetch_all=True)
     print("Found {} images.".format(len(image_entries)))
@@ -369,13 +369,13 @@ def load_model(model_path):
 
 def update_artifactsquality_with_posenet():
     # Get all images.
-    sql_script = "SELECT id, path FROM artifact WHERE type='rgb'"
+    sql_script = "SELECT id, storage_path FROM artifact WHERE dataformat='rgb'"
     db_connector = dbutils.connect_to_main_database()
     image_entries = db_connector.execute(sql_script, fetch_all=True)
     print("Found {} images.".format(len(image_entries)))
     
     with tf.Session() as sess:
-        model_cfg, model_outputs = posenet.load_model(101, sess)
+        model_cfg, model_outputs = posenet.load_model(101,sess)
         output_stride = model_cfg['output_stride']
         
     db_type = "rgb"
@@ -390,22 +390,14 @@ def update_artifactsquality_with_posenet():
             bar.update(index)
             
             # Check if there is already an entry.
-            select_sql_statement = ""
-            select_sql_statement += "SELECT COUNT(*) FROM artifact_quality"
-            select_sql_statement += " WHERE artifact_id='{}'".format(artifact_id)
-            select_sql_statement += " AND type='{}'".format(db_type)
-            select_sql_statement += " AND key='{}'".format(db_key)
-            results = db_connector.execute(select_sql_statement, fetch_one=True)[0]
             
-            # There is an entry. Skip
-            if results != 0:
-                continue
             Pose = get_pose(path,output_stride,model_outputs)
             
             # Create an SQL statement for insertion.
             sql_statement = ""
-            sql_statement += "INSERT INTO artifact_quality (type, key, value, artifact_id, misc)"
+            sql_statement += "INSERT INTO artifact_quality (model_id, key, artifact_id,float_value, confidence_value)"
             sql_statement += " VALUES(\'{}\', \'{}\', \'{}\', \'{}\', \'{}\');".format(db_type, db_key, Pose, artifact_id, "")
+            print(Pose)
             # Call database.
             result = db_connector.execute(sql_statement)
             
@@ -417,7 +409,7 @@ def update_artifactsquality_with_posenet():
         process_method=process_image_entries, 
         process_individial_entries=False, 
         progressbar=False,
-        number_of_workers=None
+        disable_gpu=True
     )
     print("Done.")
 
