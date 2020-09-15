@@ -1,9 +1,5 @@
-.ipynb_checkpoints
-*.png
-__pycache__/
-
 cgm_database/dbconnection.json
-
+*.ply
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -116,17 +112,11 @@ venv.bak/
 *.png
 
 #VS Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
 .devcontainer/
+
 # python
 *.pyc
 
 # logs
 *.log
-
-
-*.ply
